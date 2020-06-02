@@ -1684,7 +1684,7 @@ amuse oneself. Introducing: typewriter sounds!
 <p>
 Hey, let&rsquo;s get the weather in here while we&rsquo;re at it.
 Unfortunately this seems slightly unmaintained (<a href="https://github.com/bcbcarl/emacs-wttrin/pulls">few open bugfix PRs</a>) so let&rsquo;s
-roll our <a href="wttrin.el">own version</a>.
+roll our <a href="lisp/wttrin.el">own version</a>.
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">package!</span> wttrin <span style="color: #C57BDB;">:recipe</span> <span style="color: #C57BDB;">(</span><span style="color: #C57BDB;">:local-repo</span> <span style="color: #7bc275;">"lisp"</span> <span style="color: #C57BDB;">:no-byte-compile</span> t<span style="color: #C57BDB;">)</span><span style="color: #51afef;">)</span>
@@ -1713,6 +1713,40 @@ about it?
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">package!</span> elcord <span style="color: #C57BDB;">:pin</span> <span style="color: #7bc275;">"94b0afb9ba..."</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+
+<p>
+For some reason, I find myself demoing Emacs every now and then. Showing what
+keyboard stuff I&rsquo;m doing on-screen seems helpful. While <a href="https://gitlab.com/screenkey/screenkey">screenkey</a> does exist,
+having something that doesn&rsquo;t cover up screen content is nice.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">package!</span> keycast <span style="color: #C57BDB;">:pin</span> <span style="color: #7bc275;">"a912c4db1b..."</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+<p>
+let&rsquo;s just make sure this is lazy-loaded appropriately.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">use-package!</span> keycast
+  <span style="color: #C57BDB;">:commands</span> <span style="color: #DFDFDF;">keycast-mode</span>
+  <span style="color: #C57BDB;">:config</span>
+  <span style="color: #C57BDB;">(</span><span style="color: #51afef;">define-minor-mode</span> <span style="color: #DFDFDF;">keycast-mode</span>
+    <span style="color: #7e7e87;">"Show current command and its key binding in the mode line."</span>
+    <span style="color: #C57BDB;">:global</span> t
+    <span style="color: #7bc275;">(</span><span style="color: #51afef;">if</span> <span style="color: #DFDFDF;">keycast-mode</span>
+        <span style="color: #51afef;">(</span><span style="color: #51afef;">progn</span>
+          <span style="color: #C57BDB;">(</span><span style="color: #5cEfFF;">add-hook</span> <span style="color: #C57BDB;">'</span><span style="color: #DFDFDF;">pre-command-hook</span> <span style="color: #C57BDB;">'</span><span style="color: #FCCE7B;">keycast-mode-line-update</span> t<span style="color: #C57BDB;">)</span>
+          <span style="color: #C57BDB;">(</span><span style="color: #5cEfFF;">add-to-list</span> <span style="color: #C57BDB;">'</span><span style="color: #DFDFDF;">global-mode-string</span> <span style="color: #C57BDB;">'</span><span style="color: #7bc275;">(</span><span style="color: #7bc275;">""</span> <span style="color: #DFDFDF;">mode-line-keycast</span> <span style="color: #7bc275;">" "</span><span style="color: #7bc275;">)</span><span style="color: #C57BDB;">)</span><span style="color: #51afef;">)</span>
+      <span style="color: #51afef;">(</span><span style="color: #5cEfFF;">remove-hook</span> <span style="color: #C57BDB;">'</span><span style="color: #DFDFDF;">pre-command-hook</span> <span style="color: #C57BDB;">'</span><span style="color: #FCCE7B;">keycast-mode-line-update</span><span style="color: #51afef;">)</span>
+      <span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #DFDFDF;">global-mode-string</span> <span style="color: #C57BDB;">(</span><span style="color: #5cEfFF;">remove</span> <span style="color: #C57BDB;">'</span><span style="color: #7bc275;">(</span><span style="color: #7bc275;">""</span> <span style="color: #DFDFDF;">mode-line-keycast</span> <span style="color: #7bc275;">" "</span><span style="color: #7bc275;">)</span> <span style="color: #DFDFDF;">global-mode-string</span><span style="color: #C57BDB;">)</span><span style="color: #51afef;">)</span><span style="color: #7bc275;">)</span><span style="color: #C57BDB;">)</span>
+  <span style="color: #C57BDB;">(</span><span style="color: #51afef;">custom-set-faces!</span>
+    <span style="color: #C57BDB;">'</span><span style="color: #7bc275;">(</span>keycast-command <span style="color: #C57BDB;">:inherit</span> doom-modeline-debug
+                      <span style="color: #C57BDB;">:height</span> <span style="color: #e69055; font-weight: bold;">0.9</span><span style="color: #7bc275;">)</span>
+    <span style="color: #C57BDB;">'</span><span style="color: #7bc275;">(</span>keycast-key <span style="color: #C57BDB;">:inherit</span> custom-modified
+                  <span style="color: #C57BDB;">:height</span> <span style="color: #e69055; font-weight: bold;">1.1</span>
+                  <span style="color: #C57BDB;">:weight</span> bold<span style="color: #7bc275;">)</span><span style="color: #C57BDB;">)</span><span style="color: #51afef;">)</span>
 </pre>
 </div>
 </div>
